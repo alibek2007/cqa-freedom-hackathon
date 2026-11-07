@@ -1,6 +1,8 @@
 {
   "version": "0.0.1",
   "configurations": [
-    { "name": "cqa", "runtimeExecutable": "python", "runtimeArgs": ["-m", "uvicorn", "backend.app:app", "--port", "8000"], "port": 8000 }
+    { "name": "cqa", "runtimeExecutable": "python", "runtimeArgs": ["-m", "uvicorn", "backend.app:app", "--port", "8000"], "port": 8000 },
+    { "name": "cqa-offline-test", "runtimeExecutable": "python", "runtimeArgs": ["-m", "uvicorn", "backend.app:app", "--port", "8010"], "port": 8010,
+      "env": { "CQA_PROVIDER": "heuristic", "CQA_DB": "data/offline_test.db" } }
   ]
 }

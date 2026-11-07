@@ -116,3 +116,114 @@ def test_llm_path_retries_invalid_answers(monkeypatch):
     assert len(calls) == 2 and "c01" in calls[1][-1]["content"]
     assert r["items"]["c01"]["answer"] == "yes"
     assert r["cost_usd"] == round(2000 / 1e6 * 4 + 400 / 1e6 * 20, 5)
+
+
+class _Resp:
+    def __init__(self, status, payload=None, text="", headers=None):
+        self.status_code, self._p, self.headers = status, payload, headers or {}
+        self.text = text or json.dumps(payload or {})
+
+    def json(self):
+        return self._p
+
+
+def test_openai_compatible_falls_back_and_retries(monkeypatch):
+    import time
+
+    import httpx
+    from backend import evaluator
+    monkeypatch.setenv("CQA_PROVIDER", "gemini")
+    monkeypatch.setenv("GEMINI_API_KEY", "test")
+    monkeypatch.delenv("CQA_BASE_URL", raising=False)
+    monkeypatch.setattr(time, "sleep", lambda s: None)
+    evaluator._json_mode_ok.clear()
+    ok = {"choices": [{"message": {"content": '```json\n{"summary": "s", "items": []}\n```'}}],
+          "usage": {"prompt_tokens": 10, "completion_tokens": 5}, "model": "gemini-3.8-flash"}
+    seq = [_Resp(400, text="json_schema not supported"), _Resp(429, text="quota"), _Resp(200, ok)]
+    sent = []
+
+    def fake_post(url, json=None, headers=None, timeout=None):
+        sent.append(json)
+        return seq.pop(0)
+    monkeypatch.setattr(httpx, "post", fake_post)
+    data, tin, tout, model = evaluator._openai_call("sys", [{"role": "user", "content": "x"}], {}, "gemini-3.8-flash", "low")
+    assert data == {"summary": "s", "items": []} and (tin, tout) == (10, 5)
+    assert sent[0]["response_format"]["type"] == "json_schema"
+    assert sent[1]["response_format"]["type"] == "json_object" and sent[2] == sent[1]
+    assert evaluator._json_mode_ok[evaluator.GEMINI_BASE] == "json_object"
+    assert sent[0]["reasoning_effort"] == "low"
+
+
+def test_export_record_matches_appendix_format():
+    from backend import export
+    cl = {**CL, "criteria": [dict(c) for c in CL["criteria"]]}
+    items = {"c01": "yes", "c02": "na", "c03": "na", "c04": 15, "c05": "yes", "c06": 7, "c07": "yes", "c08": "no"}
+    full = {k: {"answer": v, "explanation": "e", "na_reason": "n" if v == "na" else "",
+                "evidence_turns": [2], "checked_range": None} for k, v in items.items()}
+    score = scoring.compute(cl, items)
+    ev = {"model": "m", "final": {"items": full, "score": score}}
+    rec = export.result_record({"conversation_id": "x-1"}, cl, ev)
+    vals = {c["criterion_id"]: c["value"] for c in rec["criteria"]}
+    assert vals == {"contact": True, "discovery": None, "identification": None, "consultation": 15,
+                    "empathy": True, "dialogue": 7, "closure": True, "critical": False}
+    assert [c["criterion_id"] for c in rec["criteria"]] == export.EXPORT_IDS
+    assert rec["score"] == {"final_score": score["total"], "critical_flag": False}
+    err = export.result_record({"conversation_id": "x-2"}, cl, None, "timeout")
+    doc = {"schema_version": "1.0", "team_name": "T", "model": {"mode": "external_api", "name": "m"},
+           "results": [rec, err]}
+    assert export.validate(doc, ["x-1", "x-2"], 2) == []
+    bad = json.loads(json.dumps(doc))
+    bad["results"][0]["criteria"][5]["value"] = 5          # dialogue has no step 5
+    bad["results"][0]["criteria"][0]["value"] = 1          # contact must be boolean
+    bad["results"][0]["score"]["critical_flag"] = True
+    probs = export.validate(bad, ["x-1", "x-2", "x-3"], 3)
+    assert any("dialogue" in p for p in probs) and any("contact" in p for p in probs)
+    assert any("critical_flag" in p for p in probs) and any("missing" in p for p in probs)
+
+
+def test_daily_quota_switches_to_next_model(monkeypatch):
+    import time
+
+    import httpx
+    from backend import evaluator
+    monkeypatch.setenv("CQA_PROVIDER", "gemini")
+    monkeypatch.setenv("GEMINI_API_KEY", "test")
+    monkeypatch.setenv("CQA_FALLBACK_MODELS", "m2")
+    monkeypatch.setattr(time, "sleep", lambda s: None)
+    evaluator._json_mode_ok.clear(); evaluator._cooldown.clear()
+    quota = ('[{"error": {"code": 429, "details": [{"violations": [{"quotaId": '
+             '"GenerateRequestsPerDayPerProjectPerModel-FreeTier"}]}, {"retryDelay": "3600s"}]}}]')
+    ok = {"choices": [{"message": {"content": '{"summary": "", "items": []}'}}], "usage": {}}
+    seen = []
+
+    def fake_post(url, json=None, headers=None, timeout=None):
+        seen.append(json["model"])
+        return _Resp(429, text=quota) if json["model"] == "m1" else _Resp(200, ok)
+    monkeypatch.setattr(httpx, "post", fake_post)
+    evaluator._openai_call("s", [], {}, "m1", "")
+    assert seen == ["m1", "m2"] and evaluator._cooldown["m1"] > time.time() + 3000
+    seen.clear()
+    evaluator._openai_call("s", [], {}, "m1", "")   # m1 is skipped while its quota is used up
+    assert seen == ["m2"]
+
+
+def test_evaluate_many_one_request_and_fallback(monkeypatch):
+    from backend import evaluator
+    monkeypatch.setenv("CQA_PROVIDER", "gemini")
+    mk = lambda ans: [{"criterion_id": k, "answer": v, "explanation": "e", "na_reason": "",
+                       "evidence_turns": [1], "checked_from": 0, "checked_to": 0} for k, v in ans.items()]
+    good = {c["id"]: ("yes" if c["type"] != "scale" else str(max(s["value"] for s in c["scale"]))) for c in CL["criteria"]}
+    good["c08"] = "no"
+    dlg = lambda cid: {"conversation_id": cid, "transcript": [{"timestamp": "00:01", "speaker": "operator", "text": "Hi"}]}
+    calls = []
+
+    def fake(system, messages, schema, model, effort):
+        calls.append(schema)
+        if "dialogs" in schema["properties"]:   # batch: second dialog has an invalid answer
+            return {"dialogs": [{"conversation_id": "a", "summary": "", "items": mk(good)},
+                                {"conversation_id": "b", "summary": "", "items": mk(dict(good, c01="na"))}]}, 3000, 900, model
+        return {"summary": "", "items": mk(good)}, 1000, 300, model
+    out = evaluator.evaluate_many([dlg("a"), dlg("b")], CL, "m", "low", call=fake)
+    assert len(calls) == 2 and "dialogs" in calls[0]["properties"]       # 1 batch + 1 single retry
+    assert out["a"]["batched"] == 2 and out["a"]["score"]["total"] == 100.0
+    assert "batched" not in out["b"] and out["b"]["items"]["c01"]["answer"] == "yes"

@@ -1,0 +1,966 @@
+{
+ "description": "Reference labels for the 60 DEV chats, made by hand from the checklist. 'uncertain' = criteria where the checklist wording allows another answer; Closure follows the organizers' clarification: a summary or an offer of further help AND a goodbye are both required.",
+ "criteria": [
+  "contact",
+  "discovery",
+  "identification",
+  "consultation",
+  "empathy",
+  "dialogue",
+  "closure",
+  "critical"
+ ],
+ "dialogs": {
+  "p1-ru-001": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-ru-002": {
+   "labels": {
+    "contact": true,
+    "discovery": true,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": true,
+    "critical": false
+   },
+   "uncertain": [
+    "identification"
+   ],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-ru-003": {
+   "labels": {
+    "contact": true,
+    "discovery": true,
+    "identification": null,
+    "consultation": 10,
+    "empathy": true,
+    "dialogue": 7,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [
+    "dialogue",
+    "closure"
+   ],
+   "ambiguous_closure": false,
+   "note": "ignored the commission question"
+  },
+  "p1-ru-004": {
+   "labels": {
+    "contact": true,
+    "discovery": true,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-ru-005": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 4,
+    "closure": true,
+    "critical": false
+   },
+   "uncertain": [
+    "consultation"
+   ],
+   "ambiguous_closure": false,
+   "note": "vague path, client had to re-ask"
+  },
+  "p1-ru-006": {
+   "labels": {
+    "contact": true,
+    "discovery": true,
+    "identification": true,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": true,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-ru-007": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 10,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": true,
+    "critical": false
+   },
+   "uncertain": [
+    "dialogue",
+    "closure"
+   ],
+   "ambiguous_closure": false,
+   "note": "second question (when to retry) ignored"
+  },
+  "p1-ru-008": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-ru-009": {
+   "labels": {
+    "contact": true,
+    "discovery": true,
+    "identification": false,
+    "consultation": 10,
+    "empathy": true,
+    "dialogue": 7,
+    "closure": true,
+    "critical": false
+   },
+   "uncertain": [
+    "critical",
+    "consultation",
+    "dialogue"
+   ],
+   "ambiguous_closure": false,
+   "note": "account restriction disclosed without identification"
+  },
+  "p1-ru-010": {
+   "labels": {
+    "contact": true,
+    "discovery": true,
+    "identification": true,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": true,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-ru-011": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-ru-012": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": null,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": "connection lost"
+  },
+  "p1-ru-013": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": true,
+    "critical": false
+   },
+   "uncertain": [
+    "closure"
+   ],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-ru-014": {
+   "labels": {
+    "contact": false,
+    "discovery": false,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [
+    "dialogue"
+   ],
+   "ambiguous_closure": false,
+   "note": "\"Привет\", no name; asked what client already wrote"
+  },
+  "p1-ru-015": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": true,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-ru-016": {
+   "labels": {
+    "contact": true,
+    "discovery": false,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 7,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [
+    "consultation"
+   ],
+   "ambiguous_closure": false,
+   "note": "wrong first advice without clarifying"
+  },
+  "p1-ru-017": {
+   "labels": {
+    "contact": true,
+    "discovery": true,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-ru-018": {
+   "labels": {
+    "contact": true,
+    "discovery": false,
+    "identification": null,
+    "consultation": 0,
+    "empathy": false,
+    "dialogue": 4,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [
+    "empathy",
+    "dialogue"
+   ],
+   "ambiguous_closure": false,
+   "note": "contradictory, closed without goodbye"
+  },
+  "p1-ru-019": {
+   "labels": {
+    "contact": true,
+    "discovery": true,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-ru-020": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-ru-021": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-ru-022": {
+   "labels": {
+    "contact": true,
+    "discovery": false,
+    "identification": null,
+    "consultation": 0,
+    "empathy": false,
+    "dialogue": 7,
+    "closure": false,
+    "critical": true
+   },
+   "uncertain": [
+    "discovery",
+    "dialogue"
+   ],
+   "ambiguous_closure": false,
+   "note": "money to personal card"
+  },
+  "p1-ru-023": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": true
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": "paid private consultation"
+  },
+  "p1-ru-024": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-ru-025": {
+   "labels": {
+    "contact": true,
+    "discovery": true,
+    "identification": null,
+    "consultation": null,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": null,
+    "critical": false
+   },
+   "uncertain": [
+    "discovery"
+   ],
+   "ambiguous_closure": false,
+   "note": "client left before stating the request"
+  },
+  "p1-ru-026": {
+   "labels": {
+    "contact": true,
+    "discovery": false,
+    "identification": null,
+    "consultation": 0,
+    "empathy": false,
+    "dialogue": 4,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [
+    "empathy"
+   ],
+   "ambiguous_closure": false,
+   "note": "\"Всё есть в приложении\", closed chat"
+  },
+  "p1-ru-027": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-ru-028": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": "warned about waiting"
+  },
+  "p1-ru-029": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": false,
+    "dialogue": 7,
+    "closure": false,
+    "critical": true
+   },
+   "uncertain": [
+    "dialogue"
+   ],
+   "ambiguous_closure": false,
+   "note": "insult"
+  },
+  "p1-ru-030": {
+   "labels": {
+    "contact": true,
+    "discovery": true,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-en-001": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-en-002": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-en-003": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-en-004": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-en-005": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-en-006": {
+   "labels": {
+    "contact": true,
+    "discovery": true,
+    "identification": true,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": true,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-en-007": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 10,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": true,
+    "critical": false
+   },
+   "uncertain": [
+    "dialogue",
+    "closure"
+   ],
+   "ambiguous_closure": false,
+   "note": "second question ignored"
+  },
+  "p1-en-008": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [
+    "dialogue"
+   ],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-en-009": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": null,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": "connection lost"
+  },
+  "p1-en-010": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-en-011": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-en-012": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-en-013": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": true
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": "paid private advice, agent closed chat"
+  },
+  "p1-en-014": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": false,
+    "consultation": 10,
+    "empathy": true,
+    "dialogue": 7,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [
+    "critical",
+    "empathy"
+   ],
+   "ambiguous_closure": false,
+   "note": "account info without verification"
+  },
+  "p1-en-015": {
+   "labels": {
+    "contact": false,
+    "discovery": false,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 7,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [
+    "dialogue"
+   ],
+   "ambiguous_closure": false,
+   "note": "no greeting/name, no clarification"
+  },
+  "p1-kz-001": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-kz-002": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-kz-003": {
+   "labels": {
+    "contact": true,
+    "discovery": true,
+    "identification": true,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": true,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-kz-004": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-kz-005": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 4,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [
+    "dialogue"
+   ],
+   "ambiguous_closure": false,
+   "note": "vague path; ended with \"Жақсы.\" and no goodbye"
+  },
+  "p1-kz-006": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-kz-007": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-kz-008": {
+   "labels": {
+    "contact": false,
+    "discovery": false,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [
+    "dialogue"
+   ],
+   "ambiguous_closure": false,
+   "note": "\"Сәлем\", no name; no closing at all"
+  },
+  "p1-kz-009": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-kz-010": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-kz-011": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": null,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": "connection lost"
+  },
+  "p1-kz-012": {
+   "labels": {
+    "contact": true,
+    "discovery": true,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": true,
+    "critical": false
+   },
+   "uncertain": [
+    "identification"
+   ],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-kz-013": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": true
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": "paid private advice, operator closed chat"
+  },
+  "p1-kz-014": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [],
+   "ambiguous_closure": false,
+   "note": ""
+  },
+  "p1-kz-015": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": false,
+    "consultation": 10,
+    "empathy": true,
+    "dialogue": 7,
+    "closure": true,
+    "critical": false
+   },
+   "uncertain": [
+    "critical",
+    "empathy"
+   ],
+   "ambiguous_closure": false,
+   "note": "account restriction disclosed without identification"
+  }
+ }
+}

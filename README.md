@@ -24,11 +24,13 @@ Tests: `python -m pytest -q tests`
 | Variable | Meaning |
 |---|---|
 | `CQA_DATASET_URL` | Organizers' GET link with `{group_id}` in place of the group value |
-| `CQA_PROVIDER` | `anthropic` (real evaluation) or `heuristic` (offline keyword rules, for UI dev only) |
-| `ANTHROPIC_API_KEY` | API key for Claude |
-| `CQA_MODEL` | default `claude-opus-5-5` |
-| `CQA_EFFORT` | `low` / `medium` / `high` |
-| `CQA_CONCURRENCY` | parallel evaluations in batch mode (default 6) |
+| `CQA_PROVIDER` | `gemini` (free tier, default), `anthropic` (Claude, paid), `openai` (any OpenAI-compatible API: Groq, OpenRouter, local Ollama) or `heuristic` (offline keyword rules, UI development only) |
+| `GEMINI_API_KEY` | free key from https://aistudio.google.com/apikey |
+| `ANTHROPIC_API_KEY` | key for `anthropic` |
+| `CQA_BASE_URL`, `CQA_API_KEY` | endpoint and key for `openai`, e.g. `http://localhost:11434/v1` for Ollama |
+| `CQA_MODEL` | empty = provider default (`gemini-3.8-flash` / `claude-opus-5-5`) |
+| `CQA_EFFORT` | reasoning effort `low` / `medium` / `high` |
+| `CQA_CONCURRENCY` | parallel evaluations in batch mode (default 2 for Gemini free tier, 6 otherwise) |
 
 ## What it does
 
@@ -59,16 +61,89 @@ criterion: answer, explanation (Russian), evidence turn numbers, checked range a
 Answers are validated (allowed values, N/A permission, existing turn numbers); invalid ones are sent back
 to the model once for correction. Points are then computed in code.
 
-Model: **Claude Opus 5.5** (`claude-opus-5-5`, configurable), $4 / $20 per 1M input / output tokens.
-Rough estimate before measurement: ~4k input + ~2–4k output (including thinking) tokens per chat ≈ **$0.06–0.10
-per evaluation**; long calls cost more. The exact tokens and cost are recorded on every evaluation card and
-summed for batch runs — replace this estimate with the measured DEV average.
+Models:
+- **Development / demo: Google Gemini Flash on the free tier — $0 per evaluation.** Primary
+  `gemini-3.8-flash`, with automatic fallback to `3.7-flash`, `3.6-flash`, `3.5-flash`, `3-flash-preview`,
+  `3.5-flash-lite`, `3.1-flash-lite` when a model is overloaded, too slow or out of its daily free quota
+  (`CQA_FALLBACK_MODELS` to change the list). Batch runs use 2 parallel calls. Note: on the free
+  tier Google may use the submitted content to improve its products; for production use a paid tier
+  (content not used for training) or a self-hosted model.
+- **Alternative: Claude Opus 5.5** (`claude-opus-5-5`, $4 / $20 per 1M tokens), roughly $0.06–0.10 per chat.
+- The exact tokens and cost are recorded on every evaluation card and summed for batch runs.
+
+For OpenAI-compatible APIs the backend first asks for schema-constrained JSON, falls back to plain JSON
+mode if the server rejects it, and remembers what worked.
 Prompt rules handle the data quirks: the bot's greeting is not the operator's, the greeting must be in the
 client's language, and call transcripts come from speech recognition.
 
 Recordings: `audio_url` points to a player page holding a signed MP3 link that expires after about an hour. The
 backend (`/api/audio/{id}`) extracts and refreshes that link and streams the file with byte-range support,
 so the in-app player can seek to any turn.
+
+## Results files for the organizers (JSON 1.0)
+
+`results/dev/results.json` (DEV, 65 dialogs) and `results/prod/results.json` (control set, 10 chats) follow
+the appendix format: criterion ids `contact … critical`, values `true/false/null` or scale steps,
+`evidence_turns` numbered over the full original transcript, `final_score` with N/A weight redistribution,
+`critical_flag`, and `status: "error"` records for dialogs that could not be evaluated.
+
+One command does everything — fetch, evaluate (failed dialogs get 2 more attempts), export, validate:
+
+```bash
+python -m backend.run_set --group <control group_id> --out results/prod/results.json --expect 10 --team "<team name>"
+```
+
+Check that it prints `[validate] OK`, then commit and push (or add `--push` to do it automatically).
+`--export-only` rewrites the file from stored evaluations (e.g. after appeals). The UI has the same export
+as **Скачать results.json** on the dialog list.
+
+**Gemini free-tier quota:** about 20 requests per day per model (resets at midnight Pacific time). The app
+spreads requests over several Flash models and skips a model whose daily quota is used up, so the model
+name in `results.json` can list more than one model. Don't spend the quota on test runs on the control day.
+
+## Measuring accuracy
+
+`eval/gold_dev.txt` holds reference answers for the 60 DEV chats, labelled by hand against the checklist
+(`a|b` marks cases where the checklist wording allows two readings). Compare any results file with it:
+
+```bash
+python eval/accuracy.py results/dev/results.json --details
+```
+
+To test a rule or model change cheaply on selected dialogs (no database writes):
+
+```bash
+python -m eval.try_model --model gemini-3.8-flash --ids p1-ru-003 p1-ru-005 p1-kz-005
+```
+
+The checklist descriptions include clarifications derived from the disagreements (what counts as a
+greeting, when identification is required, how to score unanswered questions and closing). They are
+part of the checklist data, so they can be edited in the UI like any other wording.
+
+## Accuracy check
+
+`eval/dev_reference.json` holds hand-made labels for the 60 DEV chats (8 criteria each). Labels that the
+checklist wording allows to read either way are marked `uncertain`. Compare any results file with:
+
+```bash
+python -m eval.compare results/dev/results.json --details
+python -m eval.experiment --model gemini-3.8-flash --out eval/runs/run.json   # re-score with one model
+```
+
+Same model (`gemini-3.1-flash-lite`), original vs clarified checklist rules:
+
+| | Original rules | Clarified rules |
+|---|---|---|
+| Clear-cut labels | 87.9% | **93.3%** |
+| Need discovery | 56.9% | 77.6% |
+| Identification | 94.8% | 100% |
+| Consultation | 89.5% | 94.7% |
+
+The clarifications are part of the checklist text (editable in the UI), not code. Gross errors were found in
+all 5 DEV chats that contain them, in RU, KZ and EN.
+
+**Efficiency:** with Gemini, 5 chats are scored in one request (`CQA_DIALOGS_PER_CALL`), so DEV needs ~12
+requests and the 10 control chats ~2; a chat with an invalid answer is re-scored alone.
 
 ## Architecture
 
@@ -79,7 +154,8 @@ backend/    FastAPI: dataset proxy, checklist versions, evaluation (single + bat
             scoring.py   – deterministic scoring engine
             evaluator.py – prompt, structured output, validation, offline heuristic fallback
             db.py        – SQLite (data/cqa.db), created automatically
-tests/      scoring rules, validation, LLM retry path (mocked)
+backend/export.py, run_set.py – results.json export/validation and the one-command control-set run
+tests/      scoring rules, results format, validation, LLM retry path (mocked)
 ```
 
 Main API: `GET /api/dialogs`, `GET /api/dialogs/{id}`, `POST /api/evaluate`, `POST /api/evaluate/batch`,

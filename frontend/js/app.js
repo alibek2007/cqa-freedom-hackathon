@@ -113,6 +113,7 @@ async function viewDialogs(open) {
       <div class="cqa-group"><button class="cqa-primary" id="evalAll">Оценить все</button>
         <button id="reevalAll" title="Заново, даже если уже оценены">Переоценить</button>
         <span id="prog" class="cqa-progress cqa-muted cqa-small"></span></div>
+      <div class="cqa-group"><button id="export" title="Формат организаторов (JSON 1.0)">Скачать results.json</button></div>
     </div>
     <div class="cqa-toolbar">
       <select id="fLang"><option value="">Все языки</option>${Object.keys(LANG).map((l) => `<option ${S.filters.lang === l ? "selected" : ""}>${l}</option>`).join("")}</select>
@@ -138,6 +139,13 @@ async function viewDialogs(open) {
     const r = await api.upload(f, S.group || "UPLOAD"); toast(`Загружено диалогов: ${r.loaded}`); route();
   });
   $("#evalAll").onclick = (e) => runBatch(false, e.target);
+  $("#export").onclick = (e) => guard(async () => {
+    if (!S.group) throw new Error("Выберите набор (DEV или контрольный)");
+    const r = await api.exportResults(S.group);
+    const blob = new Blob([JSON.stringify(r.document, null, 2)], { type: "application/json" });
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "results.json"; a.click();
+    toast(r.problems.length ? `Выгружено, но есть замечания: ${r.problems.slice(0, 3).join("; ")}` : `results.json: ${r.document.results.length} записей, проверка пройдена`, r.problems.length > 0);
+  }, e.target);
   $("#reevalAll").onclick = (e) => { if (confirm("Переоценить все диалоги набора заново?")) runBatch(true, e.target); };
 
   let rows = [];

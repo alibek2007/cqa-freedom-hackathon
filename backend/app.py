@@ -98,7 +98,30 @@ def run_evaluation(conversation_id: str, checklist: dict, force: bool = False) -
     dialog = db.get_dialog(conversation_id)
     if not dialog:
         raise HTTPException(404, f"Dialog {conversation_id} not found")
-    res = evaluator.evaluate(dialog, checklist)
+    return store_evaluation(conversation_id, checklist, evaluator.evaluate(dialog, checklist))
+
+
+def run_evaluations(conversation_ids: list[str], checklist: dict, force: bool = False) -> dict:
+    """Evaluates several dialogs, packing CQA_DIALOGS_PER_CALL of them into one model request.
+    Returns {conversation_id: evaluation | Exception}."""
+    out, todo = {}, []
+    for cid in conversation_ids:
+        prev = None if force else db.latest_evaluation(cid, checklist["id"])
+        if prev:
+            out[cid] = prev
+        else:
+            d = db.get_dialog(cid)
+            if d:
+                todo.append(d)
+            else:
+                out[cid] = HTTPException(404, f"Dialog {cid} not found")
+    if todo:
+        for cid, res in evaluator.evaluate_many(todo, checklist).items():
+            out[cid] = res if isinstance(res, Exception) else store_evaluation(cid, checklist, res)
+    return out
+
+
+def store_evaluation(conversation_id: str, checklist: dict, res: dict) -> dict:
     body = {
         "conversation_id": conversation_id, "checklist_id": checklist["id"],
         "checklist_name": checklist.get("name"),
@@ -117,7 +140,8 @@ def run_evaluation(conversation_id: str, checklist: dict, force: bool = False) -
 @app.get("/api/config")
 def config():
     return {"provider": os.getenv("CQA_PROVIDER", "anthropic"),
-            "model": os.getenv("CQA_MODEL", "claude-opus-5-5"),
+            "model": os.getenv("CQA_MODEL") or {"gemini": "gemini-3.8-flash", "heuristic": "heuristic"}.get(
+                os.getenv("CQA_PROVIDER", "anthropic").lower(), "claude-opus-5-5"),
             "effort": os.getenv("CQA_EFFORT", "medium"),
             "groups": db.list_groups(),
             "dataset_api": bool(os.getenv("CQA_DATASET_URL"))}
@@ -313,7 +337,9 @@ def evaluate(body: dict = Body(...)):
 
 
 JOBS: dict[str, dict] = {}
-_pool = ThreadPoolExecutor(max_workers=int(os.getenv("CQA_CONCURRENCY", "6")))
+# free tiers have low per-minute quotas -> fewer parallel calls by default
+_pool = ThreadPoolExecutor(max_workers=int(os.getenv("CQA_CONCURRENCY") or (
+    "2" if os.getenv("CQA_PROVIDER", "").lower() == "gemini" else "6")))
 
 
 @app.post("/api/evaluate/batch")
@@ -326,23 +352,26 @@ def evaluate_batch(body: dict = Body(...)):
     JOBS[job["id"]] = job
     lock = threading.Lock()
 
-    def one(cid):
+    def chunk(cids):
         try:
-            ev = run_evaluation(cid, cl, force)
-            with lock:
-                job["cost_usd"] = round(job["cost_usd"] + (ev.get("cost_usd") or 0), 4)
-        except Exception as e:  # keep going; failures are listed and can be retried
-            with lock:
-                job["failed"].append({"conversation_id": cid, "error": getattr(e, "detail", str(e))})
-        finally:
-            with lock:
+            results = run_evaluations(cids, cl, force)
+        except Exception as e:
+            results = {cid: e for cid in cids}
+        with lock:
+            for cid in cids:
+                r = results.get(cid, RuntimeError("no result"))
+                if isinstance(r, Exception):   # keep going; failures are listed and can be retried
+                    job["failed"].append({"conversation_id": cid, "error": getattr(r, "detail", str(r))})
+                else:
+                    job["cost_usd"] = round(job["cost_usd"] + (r.get("cost_usd") or 0), 4)
                 job["done"] += 1
-                job["running"] = job["done"] < job["total"]
+            job["running"] = job["done"] < job["total"]
 
     if not ids:
         job["running"] = False
-    for cid in ids:
-        _pool.submit(one, cid)
+    n = evaluator.dialogs_per_call()   # several dialogs per model request
+    for i in range(0, len(ids), n):
+        _pool.submit(chunk, ids[i:i + n])
     return job
 
 
@@ -431,6 +460,18 @@ def decide(aid: int, body: dict = Body(...)):
     ev["status"] = "appealed" if db.list_appeals(status="open", evaluation_id=ev["id"]) else "reviewed"
     db.update_evaluation(ev["id"], ev)
     return {"appeal": db.get_appeal(aid), "evaluation": db.get_evaluation(ev["id"])}
+
+
+# ------------------------------------------------------------------ results export (organizers' format)
+@app.get("/api/export")
+def export_results(group_id: str, checklist_id: int | None = None):
+    from . import export
+    try:
+        doc = export.build(group_id, checklist_id)
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+    ids = [d["conversation_id"] for d in db.list_dialogs(group_id)]
+    return {"problems": export.validate(doc, ids), "document": doc}
 
 
 # ------------------------------------------------------------------ static UI

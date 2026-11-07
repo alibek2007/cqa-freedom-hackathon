@@ -30,5 +30,6 @@ export const api = {
   job: (id) => req("GET", `/api/jobs/${id}`),
   appeals: (status) => req("GET", `/api/appeals${status ? `?status=${status}` : ""}`),
   appeal: (evaluation_id, criterion_id, comment) => req("POST", "/api/appeals", { evaluation_id, criterion_id, comment }),
+  exportResults: (group) => req("GET", `/api/export?group_id=${encodeURIComponent(group)}`),
   decide: (id, body) => req("POST", `/api/appeals/${id}/decision`, body),
 };

@@ -2,12 +2,13 @@
 from __future__ import annotations
 
 import json
+import os
 import sqlite3
 import threading
 from datetime import datetime, timezone
 from pathlib import Path
 
-DB_PATH = Path(__file__).resolve().parent.parent / "data" / "cqa.db"
+DB_PATH = Path(os.getenv("CQA_DB") or Path(__file__).resolve().parent.parent / "data" / "cqa.db")
 _lock = threading.Lock()
 
 SCHEMA = """
