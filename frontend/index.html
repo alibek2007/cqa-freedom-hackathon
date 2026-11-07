@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CQA — оценка качества диалогов</title>
+  <link rel="stylesheet" href="cqa.css">
+  <script>
+    // Embedding (e.g. Dynamics 365 web resource): point the UI to the backend here.
+    window.CQA_CONFIG = window.CQA_CONFIG || { apiBase: "" };
+  </script>
+</head>
+<body>
+  <!-- the whole app renders inside this single root; all styles are scoped to .cqa -->
+  <div id="cqa-app" class="cqa"></div>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
