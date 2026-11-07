@@ -961,6 +961,101 @@
    ],
    "ambiguous_closure": false,
    "note": "account restriction disclosed without identification"
+  },
+  "p4-ru-001": {
+   "labels": {
+    "contact": true,
+    "discovery": null,
+    "identification": null,
+    "consultation": 15,
+    "empathy": false,
+    "dialogue": 7,
+    "closure": null,
+    "critical": false
+   },
+   "uncertain": [
+    "consultation",
+    "empathy",
+    "dialogue"
+   ],
+   "ambiguous_closure": false,
+   "note": "client ended the call; operator answered the complaint formally"
+  },
+  "p4-ru-002": {
+   "labels": {
+    "contact": false,
+    "discovery": null,
+    "identification": true,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 10,
+    "closure": false,
+    "critical": false
+   },
+   "uncertain": [
+    "contact",
+    "closure"
+   ],
+   "ambiguous_closure": false,
+   "note": "callback without a greeting; client on hold #18-#59 while operator talks to a trader"
+  },
+  "p4-ru-003": {
+   "labels": {
+    "contact": true,
+    "discovery": true,
+    "identification": true,
+    "consultation": 20,
+    "empathy": true,
+    "dialogue": 7,
+    "closure": null,
+    "critical": false
+   },
+   "uncertain": [
+    "dialogue",
+    "closure"
+   ],
+   "ambiguous_closure": false,
+   "note": "identification by name, IIN and SMS code before account data; client hung up"
+  },
+  "p4-ru-004": {
+   "labels": {
+    "contact": true,
+    "discovery": true,
+    "identification": true,
+    "consultation": 15,
+    "empathy": true,
+    "dialogue": 4,
+    "closure": null,
+    "critical": false
+   },
+   "uncertain": [
+    "consultation",
+    "empathy",
+    "dialogue"
+   ],
+   "ambiguous_closure": false,
+   "note": "client keeps asking \"every time?\"; client hung up"
+  },
+  "p4-ru-005": {
+   "labels": {
+    "contact": false,
+    "discovery": true,
+    "identification": null,
+    "consultation": 15,
+    "empathy": true,
+    "dialogue": 7,
+    "closure": true,
+    "critical": false
+   },
+   "uncertain": [
+    "contact",
+    "identification",
+    "consultation",
+    "dialogue",
+    "closure"
+   ],
+   "ambiguous_closure": false,
+   "note": "no name heard in the greeting"
   }
  }
 }
