@@ -1,5 +1,7 @@
 # CQA — Conversation Quality Analytics (Freedom Broker hackathon)
 
+**Team: Sugar Daddies Cohord**
+
 Prototype that scores operator chats and calls against a configurable checklist, shows evidence for every
 score, and supports appeals with reviewer decisions and automatic recalculation.
 
