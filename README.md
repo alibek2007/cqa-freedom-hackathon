@@ -55,17 +55,18 @@ Tests: `python -m pytest -q tests`
 
 ### How the LLM is used
 
-One call per dialog. The prompt is built from the checklist JSON, so new criteria work without code changes.
+With Gemini, 5 dialogs are scored in one request (`CQA_DIALOGS_PER_CALL`); with Claude, one dialog per request.
+The prompt is built from the checklist JSON, so new criteria work without code changes.
 The transcript is sent with numbered turns; the model returns, via structured JSON output, one item per
 criterion: answer, explanation (Russian), evidence turn numbers, checked range and N/A reason.
 Answers are validated (allowed values, N/A permission, existing turn numbers); invalid ones are sent back
 to the model once for correction. Points are then computed in code.
 
 Models:
-- **Development / demo: Google Gemini Flash on the free tier — $0 per evaluation.** Primary
-  `gemini-3.8-flash`, with automatic fallback to `3.7-flash`, `3.6-flash`, `3.5-flash`, `3-flash-preview`,
-  `3.5-flash-lite`, `3.1-flash-lite` when a model is overloaded, too slow or out of its daily free quota
-  (`CQA_FALLBACK_MODELS` to change the list). Batch runs use 2 parallel calls. Note: on the free
+- **Used for the submitted results: Google Gemini Flash on the free tier — $0 per evaluation.**
+  `results/prod`: `gemini-3.6-flash` and `gemini-3.5-flash`; `results/dev`: `gemini-3-flash-preview` and
+  `gemini-3.5-flash-lite`. The primary model is `CQA_MODEL`; the app falls back automatically to other Flash
+  models when one is overloaded, too slow or out of its daily free quota (`CQA_FALLBACK_MODELS`). Batch runs use 2 parallel calls. Note: on the free
   tier Google may use the submitted content to improve its products; for production use a paid tier
   (content not used for training) or a self-hosted model.
 - **Alternative: Claude Opus 5.5** (`claude-opus-5-5`, $4 / $20 per 1M tokens), roughly $0.06–0.10 per chat.
@@ -90,7 +91,7 @@ the appendix format: criterion ids `contact … critical`, values `true/false/nu
 One command does everything — fetch, evaluate (failed dialogs get 2 more attempts), export, validate:
 
 ```bash
-python -m backend.run_set --group <control group_id> --out results/prod/results.json --expect 10 --team "<team name>"
+python -m backend.run_set --group <control group_id> --out results/prod/results.json --expect 10 --push
 ```
 
 Check that it prints `[validate] OK`, then commit and push (or add `--push` to do it automatically).
@@ -100,6 +101,21 @@ as **Скачать results.json** on the dialog list.
 **Gemini free-tier quota:** about 20 requests per day per model (resets at midnight Pacific time). The app
 spreads requests over several Flash models and skips a model whose daily quota is used up, so the model
 name in `results.json` can list more than one model. Don't spend the quota on test runs on the control day.
+
+## Submitted results
+
+| File | Set | Checklist | Requests | Time | Status |
+|---|---|---|---|---|---|
+| `results/prod/results.json` | FBroker, 10 chats | v3 (clarified rules) | 2 | 19 s | 10 ok, validation OK |
+| `results/dev/results.json` | DEV, 60 chats + 5 calls | v3 (clarified rules) | 13 | 150 s | 65 ok, validation OK |
+
+DEV against the hand-made reference (`eval/dev_reference.json`, 65 dialogs): **91.2%** of clear-cut labels
+(first run with the original rules and mixed models: 88.4%); identification 100%, consultation 98.3%,
+gross errors 100%.
+
+**Known limitation:** closing is still the weakest criterion (52%). The organizers clarified that a goodbye
+alone is not enough — a summary or an offer of further help is also required — and the models still often
+treat "Пожалуйста. Хорошего дня!" as an offer of help. A sharper rule or a stronger model is the next step.
 
 ## Measuring accuracy
 
