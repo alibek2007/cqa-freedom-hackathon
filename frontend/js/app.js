@@ -1,4 +1,4 @@
-import { api } from "./api.js";
+import { api } from "./api.js?v=2";
 
 // ------------------------------------------------------------------ state & helpers
 const root = document.getElementById("cqa-app");
@@ -214,8 +214,12 @@ async function viewDialog(id, open) {
     <div class="cqa-card">
       <section class="cqa-panel cqa-transcript">
         <h2>Транскрипт</h2>
-        ${isCall ? `<audio class="cqa-audio" id="audio" controls preload="none" src="${api.audioUrl(dialog.conversation_id)}"></audio>
-          <div class="cqa-small cqa-muted" style="margin:-4px 0 8px">Запись: <a href="${esc(dialog.audio_url)}" target="_blank" rel="noopener">открыть в плеере</a> · время реплик — от начала звонка</div>` : ""}
+        ${isCall ? `<div class="cqa-player">
+          <div class="cqa-player-head"><span>🎧 Запись звонка</span>
+            <a href="${esc(dialog.audio_url)}" target="_blank" rel="noopener">Открыть в отдельном плеере ↗</a></div>
+          <audio class="cqa-audio" id="audio" controls preload="metadata" src="${api.audioUrl(dialog.conversation_id)}"></audio>
+          <div class="cqa-player-hint">Нажмите ▶ у реплики или ссылку #N в оценке — запись перемотается к этому месту.</div>
+        </div>` : ""}
         <div class="cqa-turns" id="turns">
           ${dialog.turns.map((t) => `
             <div class="cqa-turn ${esc(t.speaker)}" id="turn-${t.n}" data-n="${t.n}">
